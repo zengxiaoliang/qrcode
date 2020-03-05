@@ -291,7 +291,7 @@ public class QRCodeUtil {
 
             companyName = companyName.replace(" ", "").trim();
 
-            String path = QRCodePath.trim() + companyName.trim() .replace("\uFEFF", "");
+            String path = QRCodePath.trim() + companyName.trim() +File.separator.replace("\uFEFF", "");
 
             HashMap QRCodeMap = getUrls(path);
 
@@ -308,6 +308,8 @@ public class QRCodeUtil {
             ) {
 
                 DataEntity dataEntity = new DataEntity();
+                DataEntity notFoundDadaEntity = new DataEntity();
+                DataEntity noResDataEntity = new DataEntity();
 
                 // qrcode 二维码的URL中找到 Excel 中的URL ，校验是否能发送请求成功
                 if (QRCodeStr.contains(url)) {
@@ -340,8 +342,22 @@ public class QRCodeUtil {
 
                     } else {
 
+                        noResDataEntity.setUrl(url);
+                        noResDataEntity.setFound(true);
+                        noResDataEntity.setCompanyName(companyName);
+                        noResDataEntity.setGetResponse(false);
+                        System.out.println("找到对应二维码，但请求不通----"+JSONObject.toJSONString(noResDataEntity));
+
                     }
-                    System.out.println(JSONObject.toJSONString(dataEntity));
+                   // System.out.println(JSONObject.toJSONString(dataEntity));
+
+                }
+                else {
+                    notFoundDadaEntity.setCompanyName(companyName);
+                    notFoundDadaEntity.setFound(false);
+                    notFoundDadaEntity.setUrl(url);
+
+                    System.out.println("未在二维码中找到"+JSONObject.toJSONString(notFoundDadaEntity));
 
                 }
 
