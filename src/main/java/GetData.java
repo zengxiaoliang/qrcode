@@ -55,14 +55,6 @@ public class GetData {
 
     }
 
-    public static void main(String[] args) {
-        GetData getData = new GetData();
-        HashMap map = getData.getDataFromTxt("/Users/zeng/Documents/demo.csv");
-        for (Object key : map.keySet()
-        ) {
-            map.get(key);
 
-        }
-    }
 
 }

@@ -291,7 +291,7 @@ public class QRCodeUtil {
 
             companyName = companyName.replace(" ", "").trim();
 
-            String path = QRCodePath.trim() + companyName.trim() + "/".replace("\uFEFF", "");
+            String path = QRCodePath.trim() + companyName.trim() .replace("\uFEFF", "");
 
             HashMap QRCodeMap = getUrls(path);
 
