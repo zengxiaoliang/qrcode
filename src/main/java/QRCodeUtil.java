@@ -1,23 +1,21 @@
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.DecodeHintType;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.Result;
+import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.GlobalHistogramBinarizer;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import okhttp3.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.*;
@@ -28,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 public class QRCodeUtil {
 
 
-    private static final String CHARSET = "utf-8";
-    private static final String FORMAT_NAME = "JPG";
+    private static final String CHARSET = "UTF-8";
+    private static final String FORMAT_NAME = "PNG";
     // 二维码尺寸
     private static final int QRCODE_SIZE = 300;
     // LOGO宽度
@@ -162,13 +160,36 @@ public class QRCodeUtil {
 
 
     /**
+     * 对彩色照片黑白处理
+     *
+     * @param srcImg
+     * @return
+     */
+    public static BufferedImage grayImage(final BufferedImage srcImg,int type) {
+        int iw = srcImg.getWidth();
+        int ih = srcImg.getHeight();
+        Graphics2D srcG = srcImg.createGraphics();
+        RenderingHints rhs = srcG.getRenderingHints();
+
+        ColorSpace cs = ColorSpace.getInstance(type);
+        ColorConvertOp theOp = new ColorConvertOp(cs, rhs);
+        BufferedImage dstImg = new BufferedImage(iw, ih,
+                BufferedImage.TYPE_INT_RGB);
+
+        theOp.filter(srcImg, dstImg);
+        return dstImg;
+    }
+
+    /**
      * 从二维码中，解析数据
      *
      * @param path 二维码图片文件
      * @return 返回从二维码中解析到的数据值
      * @throws Exception
      */
-    public static String decode(String path) throws Exception {
+
+
+    public static String decodeFromQR(String path) throws Exception {
 
         File file = new File(path);
         BufferedImage image;
@@ -183,6 +204,7 @@ public class QRCodeUtil {
         hints.put(DecodeHintType.CHARACTER_SET, CHARSET);
         result = new MultiFormatReader().decode(bitmap, hints);
         String resultStr = result.getText();
+        System.out.println(resultStr);
         return resultStr;
     }
 
@@ -235,7 +257,7 @@ public class QRCodeUtil {
                 for (Object urlCode : urlsQRCodeList
                 ) {
                     String fileFullName = urlCode.toString();
-                    String url = decode(fileFullName);
+                    String url = decodeFromQR(fileFullName);
 
 
                     fileAndUrlMap.put(fileFullName, url);
@@ -250,7 +272,6 @@ public class QRCodeUtil {
 
         String url = "";
         HashMap map = new HashMap();
-        List resList = new ArrayList();
         List urlList = new ArrayList();
         Map listMap = new HashMap();
         try {
@@ -263,13 +284,15 @@ public class QRCodeUtil {
             for (int i = 0; i < array.length; i++) {
                 if (array[i].isFile()) {
                     String fileName = array[i].getPath();
-                    url = decode(fileName);
+                    url = decodeFromQR(fileName);
+                    System.out.println(url);
                     urlList.add(url);
                     listMap.put(fileName, url);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("找不到"+filePath);
         }
         map.put(filePath, listMap);
 
@@ -291,8 +314,7 @@ public class QRCodeUtil {
 
             companyName = companyName.replace(" ", "").trim();
 
-            String path = QRCodePath.trim() + companyName.trim() +File.separator.replace("\uFEFF", "");
-
+            String path = QRCodePath.trim() + companyName.trim().replace("\uFEFF", "") +File.separator.replace("\uFEFF", "");
             HashMap QRCodeMap = getUrls(path);
 
             String QRCodeStr = JSONObject.toJSONString(QRCodeMap);
@@ -383,9 +405,14 @@ public class QRCodeUtil {
 
     public static void main(String[] args) throws Exception {
         //  getFile("/Users/zeng/Documents/", "");
-        //    getUrls("/Users/zeng/Documents/DEMO");
+        getUrls("/Users/zeng/Documents/DEMO/中梁壹号院/");
+        getUrls("/Users/zeng/Documents/DEMO/九洲云海间");
+
        // System.out.println(  decode("/Users/zeng/Documents/testCode.jpeg") );
-        checkData("/Users/zeng/Documents/DEMO/demo.csv", "/Users/zeng/Documents/DEMO/");
+//        String CSVFile = args[0];
+//        String QRCodePath = args[1];
+//        checkData(CSVFile,QRCodePath);
+    //    checkData("/Users/zeng/Documents/DEMO/demo.csv", "/Users/zeng/Documents/DEMO/");
     }
 
 }
