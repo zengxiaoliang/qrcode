@@ -278,7 +278,7 @@ public class QRCodeUtil {
     }
 
 
-    public static void checkData(String CSVFile, String QRCodePath) throws Exception {
+    public static void checkData(String CSVFile, String QRCodePath)  {
 
         GetData getData = new GetData();
         HashMap csvMap = getData.getDataFromTxt(CSVFile);
@@ -314,33 +314,44 @@ public class QRCodeUtil {
                 // qrcode 二维码的URL中找到 Excel 中的URL ，校验是否能发送请求成功
                 if (QRCodeStr.contains(url)) {
                     OkHttpClient client = new OkHttpClient().newBuilder() //
-                            .readTimeout(60, TimeUnit.SECONDS) // 设置读取超时时间
-                            .writeTimeout(60, TimeUnit.SECONDS) // 设置写的超时时间
-                            .connectTimeout(60, TimeUnit.SECONDS) // 设置连接超时时间
+                            .readTimeout(10, TimeUnit.SECONDS) // 设置读取超时时间
+                            .writeTimeout(10, TimeUnit.SECONDS) // 设置写的超时时间
+                            .connectTimeout(10, TimeUnit.SECONDS) // 设置连接超时时间
                             .build();
                     Request request = new Request.Builder().url(url).get().build();
-                    Response response = client.newCall(request).execute();
-                    //   System.out.println(response.body().string());
 
-                    //返回响应码
-                    if (response.code() == 200) {
+                    try {
+                        Response response = client.newCall(request).execute();
+                        //返回响应码
+                        if (response.code() == 200) {
 
-                        for (Object key : QRCodeUrlsMap.keySet()
-                        ) {
-                            String QRCodeUrl = QRCodeUrlsMap.get(key).toString();
-                            if (url.equals(QRCodeUrl)) {
-                                path = key.toString();
-                                break;
+                            for (Object key : QRCodeUrlsMap.keySet()
+                            ) {
+                                String QRCodeUrl = QRCodeUrlsMap.get(key).toString();
+                                if (url.equals(QRCodeUrl)) {
+                                    path = key.toString();
+                                    break;
+                                }
+
                             }
+                            dataEntity.setCompanyName(companyName);
+                            dataEntity.setQrCodePath(path);
+                            dataEntity.setUrl(url);
+                            dataEntity.setFound(true);
+                            dataEntity.setGetResponse(true);
+
+                        } else {
+
+                            noResDataEntity.setUrl(url);
+                            noResDataEntity.setFound(true);
+                            noResDataEntity.setCompanyName(companyName);
+                            noResDataEntity.setGetResponse(false);
+                            System.out.println("找到对应二维码，但响应码非200----"+JSONObject.toJSONString(noResDataEntity));
 
                         }
-                        dataEntity.setCompanyName(companyName);
-                        dataEntity.setQrCodePath(path);
-                        dataEntity.setUrl(url);
-                        dataEntity.setFound(true);
-                        dataEntity.setGetResponse(true);
 
-                    } else {
+                    }catch (Exception e){
+                        //   System.out.println(response.body().string());
 
                         noResDataEntity.setUrl(url);
                         noResDataEntity.setFound(true);
@@ -349,6 +360,8 @@ public class QRCodeUtil {
                         System.out.println("找到对应二维码，但请求不通----"+JSONObject.toJSONString(noResDataEntity));
 
                     }
+
+
                    // System.out.println(JSONObject.toJSONString(dataEntity));
 
                 }
@@ -371,7 +384,7 @@ public class QRCodeUtil {
     public static void main(String[] args) throws Exception {
         //  getFile("/Users/zeng/Documents/", "");
         //    getUrls("/Users/zeng/Documents/DEMO");
-
+       // System.out.println(  decode("/Users/zeng/Documents/testCode.jpeg") );
         checkData("/Users/zeng/Documents/DEMO/demo.csv", "/Users/zeng/Documents/DEMO/");
     }
 

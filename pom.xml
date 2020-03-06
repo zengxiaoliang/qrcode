@@ -56,7 +56,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>JmeterDataUtil</mainClass>
+                            <mainClass>QRCodeUtil</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
