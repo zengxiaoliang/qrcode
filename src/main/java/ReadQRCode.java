@@ -5,9 +5,9 @@
  * @create: 2020-03-06 15:33
  **/
 
-import com.swetake.util.Qrcode;
-import jp.sourceforge.qrcode.QRCodeDecoder;
-import jp.sourceforge.qrcode.util.Color;
+//import com.swetake.util.Qrcode;
+//import jp.sourceforge.qrcode.QRCodeDecoder;
+//import jp.sourceforge.qrcode.util.Color;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,14 +30,14 @@ public class ReadQRCode {
 
 
            //QRCode解码器
-            QRCodeDecoder codeDecoder = new QRCodeDecoder();
+      //      QRCodeDecoder codeDecoder = new QRCodeDecoder();
             /**
              *codeDecoder.decode(new MyQRCodeImage())
              *这里需要实现QRCodeImage接口，移步最后一段代码
              */
             //通过解析二维码获得信息
-            String result = new String(codeDecoder.decode(new MyQRCodeImage(bufferedImage)), "utf-8");
-            System.out.println(result);
+       //     String result = new String(codeDecoder.decode(new MyQRCodeImage(bufferedImage)), "utf-8");
+         //   System.out.println(result);
         }
     }
 

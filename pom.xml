@@ -43,11 +43,7 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.xiongyingqi/qrcode -->
 
-        <dependency>
-            <groupId>QRCode</groupId>
-            <artifactId>QRCode</artifactId>
-            <version>3.0</version>
-                    </dependency>
+
 
 
                 </dependencies>
